@@ -112,3 +112,4 @@ sudo cp container /usr/local/bin/container
 sudo chmod +x /usr/local/bin/container
 
 echo "Setup complete!"
+echo "You can now use the 'container' wrapper for conveniance. Just type container."

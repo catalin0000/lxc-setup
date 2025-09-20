@@ -11,12 +11,14 @@ LXC Container Management Script
 Commands:
   new <name>        Create a new container with the specified name(basically making a copy of the golden-image container)
   start <name>      Start an existing container - this is prob redundant....
-  connect <name>    Connect to a running container - if its not running it will also start it
+  attach <name>    Connect to a running container - if its not running it will also start it
   list              List all available containers
   stop				Stop specific container
   stopall           Stop all running containers
+  deleteall         Delete all containers. No matter they run or not. !!! THIS DO NOT REMOVE STORED PROJECT DATA.
   delete <name>     Delete a container
   cleanup			Clean old containers. Destroy containers older then 30 days and remove all data.
+  recreategolden	In case the golden image needs to be recreated. - to be added in the future
   help              Show this help message
 
 Variables used:
@@ -27,7 +29,7 @@ lxc_path='/var/lib/lxc'	- where lxc is storing the containers
 Examples:
   $0 new project23
   $0 start project23
-  $0 connect project23
+  $0 attach project23
   $0 list
   $0 stopall
 
@@ -99,7 +101,7 @@ EOF
         sudo lxc-start -n "$2" -d
         echo "[*] Container $2 started."
         ;;
-    connect)
+    attach)
         if [ -z "$2" ]; then
             echo "You must supply a container name."
             exit 1
@@ -138,6 +140,26 @@ EOF
             sudo lxc-stop -n "$c"
         done
         echo "[*] All running containers stopped."
+        ;;
+    deleteall)
+        RUNNING=$(sudo lxc-ls --active )
+        if [ -n "$RUNNING" ]; then
+            echo "[*] Stopping all running containers:"
+            for c in $RUNNING; do
+	            echo "  - Stopping $c"
+	            sudo lxc-stop -n "$c"
+	        done
+        fi
+        all_cont=$(sudo lxc-ls )
+        echo "[*] Removing all containers."
+        for c in $all_cont; do
+        	if [ "$c" == "golden-image" ]; then
+        		continue
+        	fi
+            echo "  - Removing $c"
+            sudo lxc-destroy -n "$c"
+        done
+        echo "[*] All containers removed."
         ;;
     delete)
     	if [ -z "$2" ]; then
