@@ -16,7 +16,7 @@ echo 'USE_LXC_BRIDGE="true"' | sudo tee /etc/default/lxc-net
 # 3. Add default ID mapping for containers
 echo "Configuring /etc/lxc/default.conf..."
 sudo mkdir -p /etc/lxc
-sudo tee /etc/lxc/default.conf > /dev/null <<'EOF'
+sudo tee -a /etc/lxc/default.conf > /dev/null <<'EOF'
 lxc.idmap = u 0 100000 65536
 lxc.idmap = g 0 100000 65536
 EOF
@@ -27,7 +27,7 @@ sudo mkdir -p /usr/share/lxc/hooks
 
 # 5. Create pre-start hook (placeholder)
 PRE_START_HOOK="/usr/share/lxc/hooks/x11-pre-start"
-sudo tee -a "$PRE_START_HOOK" > /dev/null <<'EOF'
+sudo tee "$PRE_START_HOOK" > /dev/null <<'EOF'
 #!/bin/bash
 # TODO: Add your pre-start code here
 # set -x  # echo commands
