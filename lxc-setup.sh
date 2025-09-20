@@ -7,11 +7,18 @@ set -euo pipefail
 
 # 1. Install required packages
 echo "Installing LXC and arch-install-scripts..."
-sudo pacman -Syu --noconfirm lxc arch-install-scripts
+sudo pacman -Syu --noconfirm lxc arch-install-scripts dnsmasq
 
 # 2. Enable LXC bridge
 echo "Configuring LXC bridge..."
 echo 'USE_LXC_BRIDGE="true"' | sudo tee /etc/default/lxc-net
+
+# 2.1 Start lxc-net service
+sudo systemctl enable lxc-net --now
+
+# user is already added usually so we only need to add root
+echo 'root:100000:65536' | sudo tee -a /etc/subuid
+echo 'root:100000:65536' | sudo tee -a /etc/subgid
 
 # 3. Add default ID mapping for containers
 echo "Configuring /etc/lxc/default.conf..."
@@ -85,7 +92,7 @@ lxc.hook.post-stop = /usr/share/lxc/hooks/x11-post-stop
 EOF
 
 
-# 8. Apply custom configs to golden image
+# 9. Apply custom script to golden image
 x11_CONFIG="/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup"
 echo "Adding custom script for x11 to golden image..."
 sudo tee "$x11_CONFIG" > /dev/null <<'EOF'
@@ -94,5 +101,11 @@ if [ -n "$DISPLAY" ]; then
     xauth add :0 . $(xauth list | awk '{print $3}' | tail -1) 2>/dev/null
 fi
 EOF
+
+chown 100000:100000 '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
+chmod +x '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
+
+# to be added
+
 
 echo "Setup complete!"
