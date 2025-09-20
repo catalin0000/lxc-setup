@@ -103,8 +103,8 @@ if [ -n "$DISPLAY" ]; then
 fi
 EOF
 
-sudo chown 100000:100000 '/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup'
-sudo chmod +x '/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup'
+sudo chown 100000:100000 "/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup"
+sudo chmod +x "/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup"
 
 # LXC little 'wrapper'
 
