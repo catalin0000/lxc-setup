@@ -67,10 +67,11 @@ sudo chmod +x "$POST_STOP_HOOK"
 
 # 7. Create golden container image
 echo "Creating golden container image..."
-sudo lxc-create -n goldein-image -t download -- --dist kali --release current --arch amd64
+img_name='golden-image'
+sudo lxc-create -n $img_name -t download -- --dist kali --release current --arch amd64
 
 # 8. Apply custom configs to golden image
-GOLDEN_CONFIG="/var/lib/lxc/goldein-image/config"
+GOLDEN_CONFIG="/var/lib/lxc/$img_name/config"
 echo "Adding custom configs to golden image..."
 sudo tee -a "$GOLDEN_CONFIG" > /dev/null <<'EOF'
 # TODO: Add your custom container configs here
@@ -93,7 +94,7 @@ EOF
 
 
 # 9. Apply custom script to golden image
-x11_CONFIG="/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup"
+x11_CONFIG="/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup"
 echo "Adding custom script for x11 to golden image..."
 sudo tee "$x11_CONFIG" > /dev/null <<'EOF'
 #!/bin/bash
@@ -102,10 +103,12 @@ if [ -n "$DISPLAY" ]; then
 fi
 EOF
 
-sudo chown 100000:100000 '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
-sudo chmod +x '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
+sudo chown 100000:100000 '/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup'
+sudo chmod +x '/var/lib/lxc/$img_name/rootfs/usr/bin/x11setup'
 
-# to be added
+# LXC little 'wrapper'
 
+sudo cp container /usr/local/bin/container
+sudo chmod +x /usr/local/bin/container
 
 echo "Setup complete!"

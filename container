@@ -69,7 +69,20 @@ case "$1" in
 		# mount the project dirtory in the container
 		con_conf="$lxc_path/$2/config"
 		echo "lxc.mount.entry = $proj_dir root/$2 none bind,optional,create=dir" | sudo tee -a $con_conf
-       
+
+		# change bash logging
+		sudo tee -a "/var/lib/lxc/$2/rootfs/root/.bashrc" > /dev/null  <<EOF
+# Custom history logging for container $CONTAINER
+export HISTFILE="/root/$2/bash_history"
+export HISTTIMEFORMAT="%F %T "
+LOGFILE="/root/$2/bash_history_human_friendly"
+PROMPT_COMMAND='history -a; history -n; last_cmd=\$(history 1); echo "\$(date "+%F %T") \${last_cmd#* }" >> "\$LOGFILE"'
+shopt -s histappend
+HISTCONTROL=
+EOF
+
+		echo "[*] Bash history logging added to $proj_dir/bash_history and $proj_dir/bash_history_human_friendly"
+
         echo "[*] Starting $NEWNAME..."
         sudo lxc-start -n "$NEWNAME" -d
         echo "[*] Container $NEWNAME created and started."
@@ -187,7 +200,4 @@ case "$1" in
         usage
         ;;
 esac
-
-
-
 
