@@ -102,8 +102,8 @@ if [ -n "$DISPLAY" ]; then
 fi
 EOF
 
-chown 100000:100000 '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
-chmod +x '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
+sudo chown 100000:100000 '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
+sudo chmod +x '/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup'
 
 # to be added
 
