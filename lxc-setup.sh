@@ -27,7 +27,7 @@ sudo mkdir -p /usr/share/lxc/hooks
 
 # 5. Create pre-start hook (placeholder)
 PRE_START_HOOK="/usr/share/lxc/hooks/x11-pre-start"
-sudo tee "$PRE_START_HOOK" > /dev/null <<'EOF'
+sudo tee -a "$PRE_START_HOOK" > /dev/null <<'EOF'
 #!/bin/bash
 # TODO: Add your pre-start code here
 # set -x  # echo commands
@@ -88,7 +88,7 @@ EOF
 # 8. Apply custom configs to golden image
 x11_CONFIG="/var/lib/lxc/goldein-image/rootfs/usr/bin/x11setup"
 echo "Adding custom script for x11 to golden image..."
-sudo tee -a "$x11_CONFIG" > /dev/null <<'EOF'
+sudo tee "$x11_CONFIG" > /dev/null <<'EOF'
 #!/bin/bash
 if [ -n "$DISPLAY" ]; then
     xauth add :0 . $(xauth list | awk '{print $3}' | tail -1) 2>/dev/null
